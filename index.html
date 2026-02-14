@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恒星系模拟器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="ui-overlay">
+        <div id="time-panel">
+            <div id="time-display">
+                <span id="year-label">星系第</span>
+                <span id="year-value">1</span>
+                <span id="year-suffix">年</span>
+            </div>
+            <div id="time-controls">
+                <button id="btn-slower" title="减速">⏪</button>
+                <button id="btn-pause" title="暂停/继续">⏸</button>
+                <button id="btn-faster" title="加速">⏩</button>
+                <span id="speed-display">1x</span>
+            </div>
+            <div id="audio-controls">
+                <button id="btn-music" title="播放/暂停音乐">🎵</button>
+                <input type="range" id="volume-slider" min="0" max="100" value="30" title="音量">
+            </div>
+        </div>
+        
+        <div id="solar-system-panel">
+            <button id="btn-solar-system" title="生成太阳系">☀️ 回到太阳系</button>
+        </div>
+        
+        <div id="ui-toggle-panel">
+            <button id="btn-toggle-ui" title="隐藏/显示UI">👁️</button>
+        </div>
+        
+        <div id="info-panel" class="hidden">
+            <div id="info-header">
+                <h2 id="body-name">天体名称</h2>
+                <button id="btn-close">×</button>
+            </div>
+            <div id="info-content">
+                <div class="info-row">
+                    <span class="info-label">类型</span>
+                    <span id="body-type" class="info-value">-</span>
+                </div>
+                <div class="info-row hidden" id="planet-type-row">
+                    <span class="info-label">行星分类</span>
+                    <span id="body-planet-type" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">质量</span>
+                    <span id="body-mass" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span id="radius-label" class="info-label">半径</span>
+                    <span id="body-radius" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">轨道半径</span>
+                    <span id="body-orbital-radius" class="info-value">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">轨道周期</span>
+                    <span id="body-orbital-period" class="info-value">-</span>
+                </div>
+                <div class="info-row hidden" id="life-row">
+                    <span class="info-label">生命状态</span>
+                    <span id="body-life" class="info-value">-</span>
+                </div>
+                <div id="destroy-section" class="hidden">
+                    <button id="btn-destroy">💥 毁灭星系</button>
+                </div>
+                <div id="satellites-section" class="hidden">
+                    <h3>卫星</h3>
+                    <ul id="satellites-list"></ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="hint">点击天体查看详情 | 拖拽旋转视角 | 滚轮缩放</div>
+    </div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
