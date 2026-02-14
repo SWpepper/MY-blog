@@ -625,7 +625,8 @@ class SolarSystemSimulator {
         this.audio = new Audio('assets/background.mp3');
         this.audio.loop = true;
         this.audio.volume = 0.3;
-        this.isPlaying = false;
+        this.isPlaying = true;
+        this.audio.play().catch(e => console.log(e));
         
         const btnMusic = document.getElementById('btn-music');
         const volumeSlider = document.getElementById('volume-slider');
