@@ -12,7 +12,8 @@
     <div id="ui-overlay">
         <div id="time-panel">
             <div id="time-display">
-                <span id="year-label">星系第</span>
+                <span id="galaxy-label"></span>
+                <span id="year-label">第</span>
                 <span id="year-value">1</span>
                 <span id="year-suffix">年</span>
             </div>
@@ -28,12 +29,53 @@
             </div>
         </div>
         
+        <div id="help-panel">
+            <button id="btn-help" title="游戏说明">❓ 说明</button>
+        </div>
+        
         <div id="solar-system-panel">
             <button id="btn-solar-system" title="生成太阳系">☀️ 回到太阳系</button>
         </div>
         
         <div id="ui-toggle-panel">
             <button id="btn-toggle-ui" title="隐藏/显示UI">👁️</button>
+        </div>
+        
+        <div id="help-modal" class="hidden">
+            <div id="help-modal-content">
+                <div id="help-header">
+                    <h2>🌟 恒星系模拟器</h2>
+                    <button id="btn-close-help">×</button>
+                </div>
+                <div id="help-body">
+                    <h3>🎮 基本操作</h3>
+                    <ul>
+                        <li><strong>拖拽鼠标</strong> - 旋转视角</li>
+                        <li><strong>滚轮缩放</strong> - 放大/缩小</li>
+                        <li><strong>点击天体</strong> - 查看详情</li>
+                    </ul>
+                    
+                    <h3>⏰ 时间控制</h3>
+                    <ul>
+                        <li><strong>⏸</strong> - 暂停/继续</li>
+                        <li><strong>⏪</strong> - 减速</li>
+                        <li><strong>⏩</strong> - 加速（最高10倍）</li>
+                    </ul>
+                    
+                    <h3>🌟 功能按钮</h3>
+                    <ul>
+                        <li><strong>☀️ 回到太阳系</strong> - 生成真实太阳系</li>
+                        <li><strong>👁️</strong> - 隐藏/显示所有UI</li>
+                        <li><strong>💥 毁灭星系</strong> - 点击恒星，重新生成</li>
+                    </ul>
+                    
+                    <h3>🎵 音乐控制</h3>
+                    <ul>
+                        <li><strong>🎵/🔊</strong> - 播放/暂停</li>
+                        <li><strong>滑块</strong> - 调节音量</li>
+                    </ul>
+                </div>
+            </div>
         </div>
         
         <div id="info-panel" class="hidden">

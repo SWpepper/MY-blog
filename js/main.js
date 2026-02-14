@@ -47,6 +47,7 @@ class SolarSystemSimulator {
         this.timeScale = 1;
         this.paused = false;
         this.gameYear = 1;
+        this.galaxyNumber = this.generateGalaxyNumber();
         
         this.targetPosition = null;
         this.cameraTarget = new THREE.Vector3(0, 0, 0);
@@ -601,17 +602,20 @@ class SolarSystemSimulator {
             const btn = document.getElementById('btn-toggle-ui');
             const timePanel = document.getElementById('time-panel');
             const solarPanel = document.getElementById('solar-system-panel');
+            const helpPanel = document.getElementById('help-panel');
             const hint = document.getElementById('hint');
             
             if (this.uiVisible) {
                 timePanel.classList.remove('hidden');
                 solarPanel.classList.remove('hidden');
+                helpPanel.classList.remove('hidden');
                 if (hint) hint.classList.remove('hidden');
                 btn.textContent = '👁️';
                 btn.classList.remove('active');
             } else {
                 timePanel.classList.add('hidden');
                 solarPanel.classList.add('hidden');
+                helpPanel.classList.add('hidden');
                 if (hint) hint.classList.add('hidden');
                 btn.textContent = '👁️‍🗨️';
                 btn.classList.add('active');
@@ -619,17 +623,64 @@ class SolarSystemSimulator {
         });
         
         this.setupAudio();
+        this.setupHelp();
+        this.updateGalaxyDisplay();
+    }
+    
+    generateGalaxyNumber() {
+        const prefixes = ['NGC', 'M', 'UGC', 'IC', 'PGC'];
+        const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+        const number = Math.floor(Math.random() * 9000) + 1000;
+        return `${prefix} ${number}`;
+    }
+    
+    updateGalaxyDisplay() {
+        document.getElementById('galaxy-label').textContent = this.galaxyNumber + '星系';
+    }
+    
+    setupHelp() {
+        const btnHelp = document.getElementById('btn-help');
+        const btnCloseHelp = document.getElementById('btn-close-help');
+        const helpModal = document.getElementById('help-modal');
+        
+        btnHelp.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+        });
+        
+        btnCloseHelp.addEventListener('click', () => {
+            helpModal.classList.add('hidden');
+        });
+        
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.classList.add('hidden');
+            }
+        });
     }
     
     setupAudio() {
         this.audio = new Audio('assets/background.mp3');
         this.audio.loop = true;
         this.audio.volume = 0.3;
-        this.isPlaying = true;
-        this.audio.play().catch(e => console.log(e));
+        this.isPlaying = false;
+        this.hasAttemptedPlay = false;
         
         const btnMusic = document.getElementById('btn-music');
         const volumeSlider = document.getElementById('volume-slider');
+        
+        const startAudio = () => {
+            if (!this.hasAttemptedPlay) {
+                this.hasAttemptedPlay = true;
+                this.isPlaying = true;
+                btnMusic.classList.add('playing');
+                btnMusic.textContent = '🔊';
+                this.audio.play().catch(e => {
+                    console.log('等待用户交互播放音乐:', e);
+                });
+            }
+        };
+        
+        document.addEventListener('click', startAudio, { once: true });
         
         btnMusic.addEventListener('click', () => {
             if (this.isPlaying) {
@@ -809,6 +860,9 @@ class SolarSystemSimulator {
         this.controls.target.set(0, 0, 0);
         this.camera.position.set(0, 100, 200);
         
+        this.galaxyNumber = this.generateGalaxyNumber();
+        this.updateGalaxyDisplay();
+        
         this.createStarSystem();
         
         console.log('星系已毁灭并重新生成');
@@ -850,6 +904,9 @@ class SolarSystemSimulator {
         this.cameraTarget.set(0, 0, 0);
         this.controls.target.set(0, 0, 0);
         this.camera.position.set(0, 100, 200);
+        
+        this.galaxyNumber = '太阳系';
+        this.updateGalaxyDisplay();
         
         const sunType = STAR_TYPES[2];
         this.star = {
