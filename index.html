@@ -18,60 +18,67 @@
                 <span id="year-suffix">年</span>
             </div>
             <div id="time-controls">
-                <button id="btn-slower" title="减速">⏪</button>
-                <button id="btn-pause" title="暂停/继续">⏸</button>
-                <button id="btn-faster" title="加速">⏩</button>
+                <button id="btn-slower" title="减速">◀◀</button>
+                <button id="btn-pause" title="暂停/继续">▶▶</button>
+                <button id="btn-faster" title="加速">▶▶</button>
                 <span id="speed-display">1x</span>
             </div>
             <div id="audio-controls">
-                <button id="btn-music" title="播放/暂停音乐">🎵</button>
+                <button id="btn-music" title="播放/暂停音乐">♪</button>
                 <input type="range" id="volume-slider" min="0" max="100" value="30" title="音量">
             </div>
         </div>
         
         <div id="help-panel">
-            <button id="btn-help" title="游戏说明">❓ 说明</button>
+            <button id="btn-help" title="游戏说明">说明</button>
         </div>
         
         <div id="solar-system-panel">
-            <button id="btn-solar-system" title="生成太阳系">☀️ 回到太阳系</button>
+            <button id="btn-solar-system" title="生成太阳系">回到太阳系</button>
         </div>
         
         <div id="ui-toggle-panel">
-            <button id="btn-toggle-ui" title="隐藏/显示UI">👁️</button>
+            <button id="btn-toggle-ui" title="隐藏/显示UI">UI</button>
         </div>
         
         <div id="help-modal" class="hidden">
             <div id="help-modal-content">
                 <div id="help-header">
-                    <h2>🌟 恒星系模拟器</h2>
+                    <h2>恒星系模拟器</h2>
                     <button id="btn-close-help">×</button>
                 </div>
                 <div id="help-body">
-                    <h3>🎮 基本操作</h3>
+                    <h3>基本操作</h3>
                     <ul>
                         <li><strong>拖拽鼠标</strong> - 旋转视角</li>
                         <li><strong>滚轮缩放</strong> - 放大/缩小</li>
                         <li><strong>点击天体</strong> - 查看详情</li>
                     </ul>
                     
-                    <h3>⏰ 时间控制</h3>
+                    <h3>时间控制</h3>
                     <ul>
-                        <li><strong>⏸</strong> - 暂停/继续</li>
-                        <li><strong>⏪</strong> - 减速</li>
-                        <li><strong>⏩</strong> - 加速（最高10倍）</li>
+                        <li><strong>暂停</strong> - 暂停/继续</li>
+                        <li><strong>减速</strong> - 降低时间流速</li>
+                        <li><strong>加速</strong> - 提高时间流速（最高10倍）</li>
                     </ul>
                     
-                    <h3>🌟 功能按钮</h3>
+                    <h3>功能按钮</h3>
                     <ul>
-                        <li><strong>☀️ 回到太阳系</strong> - 生成真实太阳系</li>
-                        <li><strong>👁️</strong> - 隐藏/显示所有UI</li>
-                        <li><strong>💥 毁灭星系</strong> - 点击恒星，可选择重新生成星系</li>
+                        <li><strong>太阳系</strong> - 生成真实太阳系</li>
+                        <li><strong>UI</strong> - 隐藏/显示所有UI</li>
+                        <li><strong>毁灭星系</strong> - 点击恒星，重新生成</li>
                     </ul>
                     
-                    <h3>🎵 音乐控制</h3>
+                    <h3>星系类型</h3>
                     <ul>
-                        <li><strong>🎵/🔊</strong> - 播放/暂停</li>
+                        <li><strong>单星系统</strong> - 60%概率，一颗恒星</li>
+                        <li><strong>双星系统</strong> - 30%概率，两颗恒星绕共同质心旋转</li>
+                        <li><strong>裸星系统</strong> - 10%概率，仅有恒星无行星</li>
+                    </ul>
+                    
+                    <h3>音乐控制</h3>
+                    <ul>
+                        <li><strong>音符按钮</strong> - 播放/暂停</li>
                         <li><strong>滑块</strong> - 调节音量</li>
                     </ul>
                 </div>
@@ -113,7 +120,7 @@
                     <span id="body-life" class="info-value">-</span>
                 </div>
                 <div id="destroy-section" class="hidden">
-                    <button id="btn-destroy">💥 毁灭星系</button>
+                    <button id="btn-destroy">毁灭星系</button>
                 </div>
                 <div id="satellites-section" class="hidden">
                     <h3>卫星</h3>
@@ -136,4 +143,3 @@
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
-
