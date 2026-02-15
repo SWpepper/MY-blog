@@ -42,7 +42,14 @@ class SolarSystemSimulator {
         
         this.bodies = [];
         this.star = null;
+        this.stars = [];
         this.planets = [];
+        
+        this.isBinarySystem = false;
+        this.isRogueStar = false;
+        this.binaryOrbitAngle = 0;
+        this.binaryOrbitRadius = 15;
+        this.binaryOrbitPeriod = 0.5;
         
         this.timeScale = 1;
         this.paused = false;
@@ -423,6 +430,35 @@ class SolarSystemSimulator {
     }
     
     createStarSystem() {
+        this.isBinarySystem = false;
+        this.isRogueStar = false;
+        this.stars = [];
+        
+        const systemTypeRoll = Math.random();
+        
+        if (systemTypeRoll < 0.1) {
+            this.isRogueStar = true;
+            console.log('生成裸星系统');
+        } else if (systemTypeRoll < 0.4) {
+            this.isBinarySystem = true;
+            console.log('生成双星系统');
+        }
+        
+        if (this.isBinarySystem) {
+            this.createBinaryStars();
+        } else {
+            this.createSingleStar();
+        }
+        
+        if (!this.isRogueStar) {
+            this.createPlanets();
+        }
+        
+        const systemType = this.isRogueStar ? '裸星系统' : (this.isBinarySystem ? '双星系统' : '单星系统');
+        console.log(`星系创建完成（${systemType}），共 ${this.bodies.length} 个天体`);
+    }
+    
+    createSingleStar() {
         const starTypeIndex = Math.floor(Math.random() * STAR_TYPES.length);
         const starType = STAR_TYPES[starTypeIndex];
         const massMultiplier = starType.massRange[0] + Math.random() * (starType.massRange[1] - starType.massRange[0]);
@@ -435,10 +471,11 @@ class SolarSystemSimulator {
             starType: starType,
             mesh: null,
             glowGroup: null,
-            position: new THREE.Vector3(0, 0, 0)
+            position: new THREE.Vector3(0, 0, 0),
+            isSecondary: false
         };
         
-        const starRadius = 12 + massMultiplier * 3;
+        const starRadius = 6 + Math.sqrt(massMultiplier) * 4;
         const starGeo = new THREE.SphereGeometry(starRadius, 64, 64);
         const starTexture = this.createStarTexture(starType.color);
         const starMat = new THREE.MeshBasicMaterial({ map: starTexture });
@@ -450,12 +487,94 @@ class SolarSystemSimulator {
         this.star.glowGroup = this.createStarGlow(starRadius, starType.glowColor);
         this.scene.add(this.star.glowGroup);
         
+        this.stars.push(this.star);
         this.bodies.push(this.star);
         
         console.log(`恒星创建完成: ${starType.name}, 温度: ${starType.temp}K`);
+    }
+    
+    createBinaryStars() {
+        const starType1Index = Math.floor(Math.random() * STAR_TYPES.length);
+        const starType2Index = Math.floor(Math.random() * STAR_TYPES.length);
+        const starType1 = STAR_TYPES[starType1Index];
+        const starType2 = STAR_TYPES[starType2Index];
+        
+        const massMultiplier1 = starType1.massRange[0] + Math.random() * (starType1.massRange[1] - starType1.massRange[0]);
+        const massMultiplier2 = starType2.massRange[0] + Math.random() * (starType2.massRange[1] - starType2.massRange[0]);
+        
+        const totalMass = SOLAR_MASS * (massMultiplier1 + massMultiplier2);
+        const massRatio1 = massMultiplier1 / (massMultiplier1 + massMultiplier2);
+        const massRatio2 = massMultiplier2 / (massMultiplier1 + massMultiplier2);
+        
+        const starRadius1 = 6 + massMultiplier1 * 1.2;
+        const starRadius2 = 6 + massMultiplier2 * 1.2;
+        
+        const minSeparation = (starRadius1 + starRadius2) * 3;
+        this.binaryOrbitRadius = Math.max(25, minSeparation);
+        
+        const star1 = {
+            name: `${starType1.name} A`,
+            type: '恒星',
+            mass: SOLAR_MASS * massMultiplier1,
+            temperature: starType1.temp,
+            starType: starType1,
+            mesh: null,
+            glowGroup: null,
+            position: new THREE.Vector3(0, 0, 0),
+            isSecondary: false,
+            orbitRadius: this.binaryOrbitRadius * massRatio2,
+            orbitAngle: 0
+        };
+        
+        const star2 = {
+            name: `${starType2.name} B`,
+            type: '恒星',
+            mass: SOLAR_MASS * massMultiplier2,
+            temperature: starType2.temp,
+            starType: starType2,
+            mesh: null,
+            glowGroup: null,
+            position: new THREE.Vector3(0, 0, 0),
+            isSecondary: true,
+            orbitRadius: this.binaryOrbitRadius * massRatio1,
+            orbitAngle: Math.PI
+        };
+        
+        const starGeo1 = new THREE.SphereGeometry(starRadius1, 64, 64);
+        const starTexture1 = this.createStarTexture(starType1.color);
+        const starMat1 = new THREE.MeshBasicMaterial({ map: starTexture1 });
+        star1.mesh = new THREE.Mesh(starGeo1, starMat1);
+        star1.mesh.userData = { body: star1 };
+        this.scene.add(star1.mesh);
+        
+        star1.glowGroup = this.createStarGlow(starRadius1, starType1.glowColor);
+        this.scene.add(star1.glowGroup);
+        
+        const starGeo2 = new THREE.SphereGeometry(starRadius2, 64, 64);
+        const starTexture2 = this.createStarTexture(starType2.color);
+        const starMat2 = new THREE.MeshBasicMaterial({ map: starTexture2 });
+        star2.mesh = new THREE.Mesh(starGeo2, starMat2);
+        star2.mesh.userData = { body: star2 };
+        this.scene.add(star2.mesh);
+        
+        star2.glowGroup = this.createStarGlow(starRadius2, starType2.glowColor);
+        this.scene.add(star2.glowGroup);
+        
+        this.star = star1;
+        this.stars = [star1, star2];
+        this.bodies.push(star1, star2);
+        
+        this.totalStarMass = totalMass;
+        
+        console.log(`双星系统创建完成: ${starType1.name} A (${massMultiplier1.toFixed(2)}M☉) + ${starType2.name} B (${massMultiplier2.toFixed(2)}M☉)`);
+    }
+    
+    createPlanets() {
+        const centralMass = this.isBinarySystem ? this.totalStarMass : this.star.mass;
+        const minOrbitRadius = this.isBinarySystem ? this.binaryOrbitRadius * 1.2 : 0;
         
         const planetCount = 3 + Math.floor(Math.random() * 8);
-        let lastDistance = 0.6;
+        let lastDistance = this.isBinarySystem ? minOrbitRadius / (AU * SCALE_DISTANCE) : 0.6;
         
         for (let i = 0; i < planetCount; i++) {
             const minSpacing = 1.4;
@@ -560,8 +679,6 @@ class SolarSystemSimulator {
             
             console.log(`行星 ${planet.name} 创建完成，公转周期: ${orbitalPeriodYears.toFixed(2)}年, 卫星: ${moonCount}`);
         }
-        
-        console.log('星系创建完成，共', this.bodies.length, '个天体');
     }
     
     setupUI() {
@@ -610,14 +727,14 @@ class SolarSystemSimulator {
                 solarPanel.classList.remove('hidden');
                 helpPanel.classList.remove('hidden');
                 if (hint) hint.classList.remove('hidden');
-                btn.textContent = '👁️';
+                btn.textContent = 'UI';
                 btn.classList.remove('active');
             } else {
                 timePanel.classList.add('hidden');
                 solarPanel.classList.add('hidden');
                 helpPanel.classList.add('hidden');
                 if (hint) hint.classList.add('hidden');
-                btn.textContent = '👁️‍🗨️';
+                btn.textContent = 'UI';
                 btn.classList.add('active');
             }
         });
@@ -635,7 +752,8 @@ class SolarSystemSimulator {
     }
     
     updateGalaxyDisplay() {
-        document.getElementById('galaxy-label').textContent = this.galaxyNumber + '星系';
+        const label = this.galaxyNumber === '太阳系' ? '太阳系' : this.galaxyNumber + '星系';
+        document.getElementById('galaxy-label').textContent = label;
     }
     
     setupHelp() {
@@ -673,7 +791,7 @@ class SolarSystemSimulator {
                 this.hasAttemptedPlay = true;
                 this.isPlaying = true;
                 btnMusic.classList.add('playing');
-                btnMusic.textContent = '🔊';
+                btnMusic.textContent = '♪';
                 this.audio.play().catch(e => {
                     console.log('等待用户交互播放音乐:', e);
                 });
@@ -686,13 +804,13 @@ class SolarSystemSimulator {
             if (this.isPlaying) {
                 this.audio.pause();
                 btnMusic.classList.remove('playing');
-                btnMusic.textContent = '🎵';
+                btnMusic.textContent = '♪';
             } else {
                 this.audio.play().catch(e => {
                     console.log('音频播放失败:', e);
                 });
                 btnMusic.classList.add('playing');
-                btnMusic.textContent = '🔊';
+                btnMusic.textContent = '♪';
             }
             this.isPlaying = !this.isPlaying;
         });
@@ -837,6 +955,12 @@ class SolarSystemSimulator {
             }
         });
         
+        this.stars.forEach(star => {
+            if (star.glowGroup) {
+                this.scene.remove(star.glowGroup);
+            }
+        });
+        
         if (this.star && this.star.glowGroup) {
             this.scene.remove(this.star.glowGroup);
         }
@@ -852,7 +976,11 @@ class SolarSystemSimulator {
         
         this.bodies = [];
         this.planets = [];
+        this.stars = [];
         this.star = null;
+        this.isBinarySystem = false;
+        this.isRogueStar = false;
+        this.binaryOrbitAngle = 0;
         this.gameYear = 1;
         document.getElementById('year-value').textContent = '1';
         
@@ -882,6 +1010,12 @@ class SolarSystemSimulator {
             }
         });
         
+        this.stars.forEach(star => {
+            if (star.glowGroup) {
+                this.scene.remove(star.glowGroup);
+            }
+        });
+        
         if (this.star && this.star.glowGroup) {
             this.scene.remove(this.star.glowGroup);
         }
@@ -897,7 +1031,11 @@ class SolarSystemSimulator {
         
         this.bodies = [];
         this.planets = [];
+        this.stars = [];
         this.star = null;
+        this.isBinarySystem = false;
+        this.isRogueStar = false;
+        this.binaryOrbitAngle = 0;
         this.gameYear = 1;
         document.getElementById('year-value').textContent = '1';
         
@@ -917,8 +1055,11 @@ class SolarSystemSimulator {
             starType: sunType,
             mesh: null,
             glowGroup: null,
-            position: new THREE.Vector3(0, 0, 0)
+            position: new THREE.Vector3(0, 0, 0),
+            isSecondary: false
         };
+        
+        this.stars = [this.star];
         
         const starRadius = 15;
         const starGeo = new THREE.SphereGeometry(starRadius, 64, 64);
@@ -1071,6 +1212,22 @@ class SolarSystemSimulator {
             
             this.gameYear += gameYearsPassed;
             document.getElementById('year-value').textContent = Math.floor(this.gameYear);
+            
+            if (this.isBinarySystem && this.stars.length === 2) {
+                const binaryAngularSpeed = (2 * Math.PI) / this.binaryOrbitPeriod;
+                this.binaryOrbitAngle += binaryAngularSpeed * gameYearsPassed;
+                
+                this.stars[0].orbitAngle = this.binaryOrbitAngle;
+                this.stars[1].orbitAngle = this.binaryOrbitAngle + Math.PI;
+                
+                this.stars[0].mesh.position.x = Math.cos(this.stars[0].orbitAngle) * this.stars[0].orbitRadius;
+                this.stars[0].mesh.position.z = Math.sin(this.stars[0].orbitAngle) * this.stars[0].orbitRadius;
+                this.stars[0].glowGroup.position.copy(this.stars[0].mesh.position);
+                
+                this.stars[1].mesh.position.x = Math.cos(this.stars[1].orbitAngle) * this.stars[1].orbitRadius;
+                this.stars[1].mesh.position.z = Math.sin(this.stars[1].orbitAngle) * this.stars[1].orbitRadius;
+                this.stars[1].glowGroup.position.copy(this.stars[1].mesh.position);
+            }
             
             this.planets.forEach(planet => {
                 const angularSpeed = (2 * Math.PI) / planet.orbitalPeriodYears;
