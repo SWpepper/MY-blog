@@ -1,6 +1,7 @@
 # 恒星系模拟器
 
 一个基于 Three.js 的 3D 恒星系模拟器，支持随机生成星系和太阳系。
+网址：https://swpepper.github.io/Star-System-Simulator/
 
 ## 功能特性
 
@@ -48,4 +49,5 @@ youxi/
 ## 开源许可
 
 MIT License
+
 
